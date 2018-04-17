@@ -38,10 +38,8 @@ UpdateURL: http://yum-repos.hpccluster/centos/7/updates/$basearch/
 	export INST_DIR=/opt/software
 	mkdir -p $INST_DIR
 
-	#Pre-requirements
-	yum -y install wget bzip2 tar
-
-	# singularity 2.3 allows for biocontainer docker images to be imported, but we are currently on version 2.2, so cant.
+	yum -y install wget bzip2 tar gzip
+	
 	wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
 	bash ~/miniconda.sh -b -p $INST_DIR/miniconda
 	export PATH="$INST_DIR/miniconda/bin:$PATH"
@@ -50,12 +48,19 @@ UpdateURL: http://yum-repos.hpccluster/centos/7/updates/$basearch/
 	conda config --add channels conda-forge
 	conda config --add channels bioconda
 	conda install -y zlib
+
+	conda install samtools smalt bwa bowtie2 dos2unix git cpanminus 
+	pip3 install pyfastaq biopython
+
+	git clone https://github.com/sanger-pathogens/Bio-ReferenceManager.git
+	cd $INST_DIR/Bio-ReferenceManager
+	cpanm Module::Metadata
+	dzil authordeps | cpanm
+	dzil listdeps | cpanm 
 DEF_FILE_CONTENT
 
-$def_file_content .= "\n\tconda install -y --only-deps ".$software_name."=".$software_version."\n";
-$def_file_content .= "\n\tconda install -y zlib\n";
 $def_file_content .= "\n\t".'ls $INST_DIR/miniconda/bin > $INST_DIR/binbefore'."\n";
-$def_file_content .= "\n\tconda install -y ".$software_name."=".$software_version."\n";
+$def_file_content .= "\n\tdzil install\n";
 $def_file_content .= "\n\t".'ls $INST_DIR/miniconda/bin > $INST_DIR/binafter'."\n";
 
 $def_file_content .= <<'DEF_FILE_CONTENT';
@@ -70,8 +75,6 @@ my $def_filename = $src_directory.'/'.$software_name."-".$software_version.'.def
 open(my $fhdef, '>', $def_filename);
 print {$fhdef} $def_file_content;
 close($fhdef);
-
-
 
 # apply the definition file to the container
 chdir $arch_directory;
@@ -106,39 +109,4 @@ print {$fhtopwrapper} $top_wrapper_file_content;
 close($fhtopwrapper);
 `chmod +x $top_wrapper_filename`;
 
-
-
-
-BootStrap: yum
-OSVersion: 7
-MirrorURL: http://mirror.centos.org/centos-%{OSVERSION}/%{OSVERSION}/os/\$basearch/
-Include: yum
-UpdateURL: http://yum-repos.hpccluster/centos/7/updates/$basearch/
-
-%runscript
-    echo "Please consult provided help for instructions on how to use this container"
-
-%post
-	export INST_DIR=/opt/software
-	mkdir -p $INST_DIR
-
-	yum -y install wget bzip2 tar gzip
-	
-	wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
-	bash ~/miniconda.sh -b -p $INST_DIR/miniconda
-	export PATH="$INST_DIR/miniconda/bin:$PATH"
-
-	conda config --add channels defaults
-	conda config --add channels conda-forge
-	conda config --add channels bioconda
-	conda install -y zlib
-
-	conda install samtools smalt bwa bowtie2 dos2unix git cpanminus 
-	pip3 install pyfastaq biopython
-
-	git clone https://github.com/andrewjpage/Bio-ReferenceManager.git
-	cpanm Module::Metadata
-	cd Bio-ReferenceManager && dzil authordeps | cpanm
-	cd Bio-ReferenceManager && dzil listdeps | cpanm 
-	cd Bio-ReferenceManager && dzil install
 	
