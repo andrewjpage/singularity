@@ -38,11 +38,14 @@ UpdateURL: http://yum-repos.hpccluster/centos/7/updates/$basearch/
 	export INST_DIR=/opt/software
 	mkdir -p $INST_DIR
 
-	yum -y install wget bzip2 tar gzip perl-Net-SSLeay openssl-devel
+	yum -y install wget bzip2 tar gzip perl-Net-SSLeay openssl-devel which git zlib-devel nano 
 	yum -y group install "Development Tools"
 	
-	wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
-	bash ~/miniconda.sh -b -p $INST_DIR/miniconda
+	if [ ! -f ~/miniconda.sh ]; then
+		wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
+		bash ~/miniconda.sh -b -p $INST_DIR/miniconda
+	fi
+
 	export PATH="$INST_DIR/miniconda/bin:$PATH"
 
 	conda config --add channels defaults
@@ -55,7 +58,9 @@ UpdateURL: http://yum-repos.hpccluster/centos/7/updates/$basearch/
 	pip install pyfastaq biopython
 
 	cd $INST_DIR
-	git clone https://github.com/sanger-pathogens/Bio-ReferenceManager.git
+	if [ ! -d "$INST_DIR/Bio-ReferenceManager" ]; then
+		git clone https://github.com/sanger-pathogens/Bio-ReferenceManager.git
+	fi
 	cd $INST_DIR/Bio-ReferenceManager
 	cpanm Module::Metadata
 	cpanm Dist::Zilla
@@ -69,7 +74,7 @@ $def_file_content .= "\n\t".'ls $INST_DIR/miniconda/bin > $INST_DIR/binafter'."\
 
 $def_file_content .= <<'DEF_FILE_CONTENT';
 	for i in `ls $INST_DIR/miniconda/bin`; do
-		ln -s $INST_DIR/miniconda/bin/${i} /usr/local/bin/${i};
+		ln -fs $INST_DIR/miniconda/bin/${i} /usr/local/bin/${i};
 	done
 	awk 'FNR==NR {a[$0]++; next} !a[$0]' $INST_DIR/binbefore $INST_DIR/binafter > $INST_DIR/unique_to_package
 

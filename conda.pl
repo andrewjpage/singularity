@@ -39,11 +39,12 @@ UpdateURL: http://yum-repos.hpccluster/centos/7/updates/$basearch/
 	mkdir -p $INST_DIR
 
 	#Pre-requirements
-	yum -y install wget bzip2 tar gzip
+	yum -y install wget bzip2 tar gzip which git zlib-devel nano 
 
-	# singularity 2.3 allows for biocontainer docker images to be imported, but we are currently on version 2.2, so cant.
-	wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
-	bash ~/miniconda.sh -b -p $INST_DIR/miniconda
+	if [ ! -f ~/miniconda.sh ]; then
+		wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
+		bash ~/miniconda.sh -b -p $INST_DIR/miniconda
+	fi
 	export PATH="$INST_DIR/miniconda/bin:$PATH"
 
 	conda config --add channels defaults
