@@ -39,7 +39,8 @@ UpdateURL: http://yum-repos.hpccluster/centos/7/updates/$basearch/
 	mkdir -p $INST_DIR
 
 	#Pre-requirements
-	yum -y install wget bzip2 tar gzip ImageMagick
+	yum -y install wget bzip2 tar gzip ImageMagick which
+	yum -y group install "Development Tools"
 
 	# singularity 2.3 allows for biocontainer docker images to be imported, but we are currently on version 2.2, so cant.
 	wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
@@ -52,15 +53,34 @@ UpdateURL: http://yum-repos.hpccluster/centos/7/updates/$basearch/
 	conda install -y zlib
 	conda install abricate emboss fasttree  kraken megahit mlst newick_utils perl perl-bioperl perl-data-dumper perl-json perl-moo perl-svg perl-time-piece perl-yaml-tiny prokka roary snippy snp-dists spades trimmomatic mash
 
+    for i in `ls /opt/software/miniconda/share`; do
+            ln -s /opt/software/miniconda/share/${i} /usr/local/share/${i};
+    done
+	
+	for i in `ls /opt/software/miniconda/lib`; do
+		ln -s /opt/software/miniconda/lib/${i} /usr/local/lib/${i};
+	done
+	
+	for i in `ls /opt/software/miniconda/lib`; do
+		ln -s /opt/software/miniconda/lib/${i} /usr/local/lib64/${i};
+	done
+	
+	
+    for i in `ls /usr/local/lib64/perl5/site_perl/5.22.0`; do
+        ln -s /usr/local/lib64/perl5/site_perl/5.22.0/${i} /usr/local/lib64/perl5/${i};
+    done
+	
+	
 	ls $INST_DIR/miniconda/bin > $INST_DIR/binbefore
 
 	cd $INST_DIR
 	wget https://github.com/tseemann/nullarbor/archive/v1.28.tar.gz
 	tar xvfz v1.28.tar.gz
 
-        for i in `ls $INST_DIR/nullarbor-1.28/bin`; do
-                ln -s $INST_DIR/nullarbor-1.28/bin/${i} /usr/local/bin/${i};
-        done
+	for i in `ls $INST_DIR/nullarbor-1.28/bin`; do
+		ln -s $INST_DIR/nullarbor-1.28/bin/${i} /usr/local/bin/${i};
+	done
+
 
 	ls $INST_DIR/miniconda/bin > $INST_DIR/binafter
 DEF_FILE_CONTENT

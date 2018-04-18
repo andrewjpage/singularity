@@ -38,7 +38,8 @@ UpdateURL: http://yum-repos.hpccluster/centos/7/updates/$basearch/
 	export INST_DIR=/opt/software
 	mkdir -p $INST_DIR
 
-	yum -y install wget bzip2 tar gzip
+	yum -y install wget bzip2 tar gzip perl-Net-SSLeay openssl-devel
+	yum -y group install "Development Tools"
 	
 	wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
 	bash ~/miniconda.sh -b -p $INST_DIR/miniconda
@@ -47,14 +48,17 @@ UpdateURL: http://yum-repos.hpccluster/centos/7/updates/$basearch/
 	conda config --add channels defaults
 	conda config --add channels conda-forge
 	conda config --add channels bioconda
+	conda config --add channels trent
 	conda install -y zlib
 
-	conda install samtools smalt bwa bowtie2 dos2unix git cpanminus 
-	pip3 install pyfastaq biopython
+	conda install samtools smalt bwa bowtie2 dos2unix git perl-app-cpanminus 
+	pip install pyfastaq biopython
 
+	cd $INST_DIR
 	git clone https://github.com/sanger-pathogens/Bio-ReferenceManager.git
 	cd $INST_DIR/Bio-ReferenceManager
 	cpanm Module::Metadata
+	cpanm Dist::Zilla
 	dzil authordeps | cpanm
 	dzil listdeps | cpanm 
 DEF_FILE_CONTENT
