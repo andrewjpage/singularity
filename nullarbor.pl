@@ -63,24 +63,24 @@ UpdateURL: http://yum-repos.hpccluster/centos/7/updates/$basearch/
 	make    
 	
     for i in `ls $INST_DIR/Mykrobe-predictor/mccortex/bin`; do
-            ln -s $INST_DIR/Mykrobe-predictor/mccortex/bin/${i} /usr/local/bin/${i};
+            ln -fs $INST_DIR/Mykrobe-predictor/mccortex/bin/${i} /usr/local/bin/${i};
     done
 
     for i in `ls /opt/software/miniconda/share`; do
-            ln -s /opt/software/miniconda/share/${i} /usr/local/share/${i};
+            ln -fs /opt/software/miniconda/share/${i} /usr/local/share/${i};
     done
 	
 	for i in `ls /opt/software/miniconda/lib`; do
-		ln -s /opt/software/miniconda/lib/${i} /usr/local/lib/${i};
+		ln -sf /opt/software/miniconda/lib/${i} /usr/local/lib/${i};
 	done
 	
 	for i in `ls /opt/software/miniconda/lib`; do
-		ln -s /opt/software/miniconda/lib/${i} /usr/local/lib64/${i};
+		ln -fs /opt/software/miniconda/lib/${i} /usr/local/lib64/${i};
 	done
 	
 	
     for i in `ls /usr/local/lib64/perl5/site_perl/5.22.0`; do
-        ln -s /usr/local/lib64/perl5/site_perl/5.22.0/${i} /usr/local/lib64/perl5/${i};
+        ln -fs /usr/local/lib64/perl5/site_perl/5.22.0/${i} /usr/local/lib64/perl5/${i};
     done
 	
 	
@@ -93,7 +93,7 @@ UpdateURL: http://yum-repos.hpccluster/centos/7/updates/$basearch/
 	fi
 
 	for i in `ls $INST_DIR/nullarbor-1.28/bin`; do
-		ln -s $INST_DIR/nullarbor-1.28/bin/${i} /usr/local/bin/${i};
+		ln -fs $INST_DIR/nullarbor-1.28/bin/${i} /usr/local/bin/${i};
 	done
 
 
