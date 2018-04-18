@@ -39,7 +39,7 @@ UpdateURL: http://yum-repos.hpccluster/centos/7/updates/$basearch/
 	mkdir -p $INST_DIR
 
 	#Pre-requirements
-	yum -y install wget bzip2 tar gzip ImageMagick which
+	yum -y install wget bzip2 tar gzip ImageMagick which git
 	yum -y group install "Development Tools"
 
 	# singularity 2.3 allows for biocontainer docker images to be imported, but we are currently on version 2.2, so cant.
@@ -52,6 +52,16 @@ UpdateURL: http://yum-repos.hpccluster/centos/7/updates/$basearch/
 	conda config --add channels bioconda
 	conda install -y zlib
 	conda install abricate emboss fasttree  kraken megahit mlst newick_utils perl perl-bioperl perl-data-dumper perl-json perl-moo perl-svg perl-time-piece perl-yaml-tiny prokka roary snippy snp-dists spades trimmomatic mash
+	
+	cd $INST_DIR
+	git clone --recursive https://github.com/iqbal-lab/Mykrobe-predictor.git
+	cd Mykrobe-predictor
+	cd mccortex
+	make    
+	
+    for i in `ls $INST_DIR/Mykrobe-predictor/mccortex/bin`; do
+            ln -s $INST_DIR/Mykrobe-predictor/mccortex/bin/${i} /usr/local/bin/${i};
+    done
 
     for i in `ls /opt/software/miniconda/share`; do
             ln -s /opt/software/miniconda/share/${i} /usr/local/share/${i};
