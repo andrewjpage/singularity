@@ -55,7 +55,9 @@ UpdateURL: http://yum-repos.hpccluster/centos/7/updates/$basearch/
 	conda install abricate emboss fasttree  kraken megahit mlst newick_utils perl perl-bioperl perl-data-dumper perl-json perl-moo perl-svg perl-time-piece perl-yaml-tiny prokka roary snippy snp-dists spades trimmomatic mash
 	
 	cd $INST_DIR
-	git clone --recursive https://github.com/iqbal-lab/Mykrobe-predictor.git
+	if [ ! -d "$INST_DIR/Mykrobe-predictor" ]; then
+		git clone --recursive https://github.com/iqbal-lab/Mykrobe-predictor.git
+	fi
 	cd Mykrobe-predictor
 	cd mccortex
 	make    
@@ -85,8 +87,10 @@ UpdateURL: http://yum-repos.hpccluster/centos/7/updates/$basearch/
 	ls $INST_DIR/miniconda/bin > $INST_DIR/binbefore
 
 	cd $INST_DIR
-	wget https://github.com/tseemann/nullarbor/archive/v1.28.tar.gz
-	tar xvfz v1.28.tar.gz
+	if [ ! -d "$INST_DIR/nullarbor-1.28" ]; then
+		wget https://github.com/tseemann/nullarbor/archive/v1.28.tar.gz
+		tar xvfz v1.28.tar.gz
+	fi
 
 	for i in `ls $INST_DIR/nullarbor-1.28/bin`; do
 		ln -s $INST_DIR/nullarbor-1.28/bin/${i} /usr/local/bin/${i};
