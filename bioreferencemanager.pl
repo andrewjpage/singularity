@@ -77,6 +77,7 @@ $def_file_content .= <<'DEF_FILE_CONTENT';
 		ln -fs $INST_DIR/miniconda/bin/${i} /usr/local/bin/${i};
 	done
 	awk 'FNR==NR {a[$0]++; next} !a[$0]' $INST_DIR/binbefore $INST_DIR/binafter > $INST_DIR/unique_to_package
+	echo "export PATH=/opt/software/miniconda/bin:$PATH" >> /environment
 
 DEF_FILE_CONTENT
 

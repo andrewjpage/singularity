@@ -39,7 +39,7 @@ UpdateURL: http://yum-repos.hpccluster/centos/7/updates/$basearch/
 	mkdir -p $INST_DIR
 
 	#Pre-requirements
-	yum -y install wget bzip2 tar gzip ImageMagick which git zlib-devel nano perl-Time-Piece
+	yum -y install wget bzip2 tar gzip ImageMagick which git zlib-devel nano perl-Time-Piece perl-Digest-MD5
 	yum -y group install "Development Tools"
 
 	if [ ! -f ~/miniconda.sh ]; then
@@ -66,24 +66,22 @@ UpdateURL: http://yum-repos.hpccluster/centos/7/updates/$basearch/
             ln -fs $INST_DIR/Mykrobe-predictor/mccortex/bin/${i} /usr/local/bin/${i};
     done
 
-    for i in `ls /opt/software/miniconda/share`; do
-            ln -fs /opt/software/miniconda/share/${i} /usr/local/share/${i};
+    for i in `ls $INST_DIR/bin`; do
+            ln -fs $INST_DIR/bin/${i} /usr/local/bin/${i};
+    done
+
+    for i in `ls $INST_DIR/share`; do
+            ln -fs $INST_DIR/share/${i} /usr/local/share/${i};
     done
 	
-	for i in `ls /opt/software/miniconda/lib`; do
-		ln -sf /opt/software/miniconda/lib/${i} /usr/local/lib/${i};
+	for i in `ls $INST_DIR/lib`; do
+		ln -sf $INST_DIR/lib/${i} /usr/local/lib/${i};
 	done
 	
-	for i in `ls /opt/software/miniconda/lib`; do
-		ln -fs /opt/software/miniconda/lib/${i} /usr/local/lib64/${i};
+	for i in `ls $INST_DIR/lib`; do
+		ln -fs $INST_DIR/lib/${i} /usr/local/lib64/${i};
 	done
-	
-	
-    for i in `ls /usr/local/lib64/perl5/site_perl/5.22.0`; do
-        ln -fs /usr/local/lib64/perl5/site_perl/5.22.0/${i} /usr/local/lib64/perl5/${i};
-    done
-	
-	
+
 	ls $INST_DIR/miniconda/bin > $INST_DIR/binbefore
 
 	cd $INST_DIR
@@ -105,6 +103,7 @@ $def_file_content .= <<'DEF_FILE_CONTENT';
 		ln -s $INST_DIR/miniconda/bin/${i} /usr/local/bin/${i};
 	done
 	awk 'FNR==NR {a[$0]++; next} !a[$0]' $INST_DIR/binbefore $INST_DIR/binafter > $INST_DIR/unique_to_package
+	echo "export PATH=/opt/software/miniconda/bin:$PATH" >> /environment
 
 DEF_FILE_CONTENT
 
